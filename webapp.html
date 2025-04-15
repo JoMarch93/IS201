@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wordle Clone</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #121213;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tile {
+      width: 60px;
+      height: 60px;
+      background: #3a3a3c;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .correct {
+      background: #538d4e;
+    }
+
+    .present {
+      background: #b59f3b;
+    }
+
+    .absent {
+      background: #3a3a3c;
+    }
+
+    #keyboard {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      max-width: 600px;
+      margin-bottom: 10px;
+    }
+
+    .key {
+      padding: 10px;
+      background: #818384;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .key.correct {
+      background: #538d4e;
+    }
+
+    .key.present {
+      background: #b59f3b;
+    }
+
+    .key.absent {
+      background: #3a3a3c;
+    }
+
+    #guess-btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 10px;
+      height: 20px;
+    }
+
+    .top-bar {
+      background-color: #333; /* dark gray bar */
+      padding: 10px 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      color: white;
+      width: 100%;
+    }
+
+    .top-bar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .top-bar a:hover {
+      text-decoration: underline;
+    }
+
+    #message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(50, 50, 50, 0.95);
+      color: white;
+      padding: 20px 40px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border-radius: 10px;
+      display: none;
+      z-index: 1000;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="scratch.html">Singapore</a> 
+    <a href="index.html">Resume</a>
+  </div>
+  <h1>Wordle Game</h1>
+  <div id="grid"></div>
+  <div id="keyboard"></div>
+  <button id="guess-btn">Guess</button>
+  <div id="message"></div>
+
+  <script>
+    const WORD_LENGTH = 5;
+    const MAX_GUESSES = 6;
+
+    const wordList = [ // Partial, you can add hundreds here
+      "apple", "grape", "brick", "crane", "plane", "stone", "track", "light",
+      "shelf", "spine", "smile", "float", "drink", "climb", "pride", "flame"
+    ];
+
+    const targetWord = wordList[Math.floor(Math.random() * wordList.length)];
+    let currentGuess = "";
+    let currentRow = 0;
+
+    const grid = document.getElementById("grid");
+    const keyboard = document.getElementById("keyboard");
+    const message = document.getElementById("message");
+
+    const allKeys = "qwertyuiopasdfghjklzxcvbnm".split("");
+
+    const guesses = [];
+
+    // Init Grid
+    for (let i = 0; i < MAX_GUESSES * WORD_LENGTH; i++) {
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      grid.appendChild(tile);
+    }
+
+    // Init Keyboard
+    allKeys.forEach((key) => {
+      const btn = document.createElement("button");
+      btn.className = "key";
+      btn.textContent = key;
+      btn.addEventListener("click", () => handleKey(key));
+      keyboard.appendChild(btn);
+    });
+
+    function updateGrid() {
+      for (let r = 0; r < guesses.length; r++) {
+        for (let c = 0; c < WORD_LENGTH; c++) {
+          const tile = grid.children[r * WORD_LENGTH + c];
+          tile.textContent = guesses[r][c];
+          tile.classList.remove("correct", "present", "absent");
+          const letter = guesses[r][c];
+          if (letter === targetWord[c]) {
+            tile.classList.add("correct");
+            colorKey(letter, "correct");
+          } else if (targetWord.includes(letter)) {
+            tile.classList.add("present");
+            colorKey(letter, "present");
+          } else {
+            tile.classList.add("absent");
+            colorKey(letter, "absent");
+          }
+        }
+      }
+      for (let c = 0; c < WORD_LENGTH; c++) {
+        const tile = grid.children[currentRow * WORD_LENGTH + c];
+        tile.textContent = currentGuess[c] || "";
+      }
+    }
+
+    function colorKey(letter, status) {
+      const keyBtn = [...keyboard.children].find(k => k.textContent === letter);
+      if (!keyBtn) return;
+      if (status === "correct" || 
+          (status === "present" && !keyBtn.classList.contains("correct")) || 
+          (!keyBtn.classList.contains("correct") && !keyBtn.classList.contains("present"))) {
+        keyBtn.className = `key ${status}`;
+      }
+    }
+
+    function handleKey(key) {
+      if (currentGuess.length < WORD_LENGTH) {
+        currentGuess += key;
+        updateGrid();
+      }
+    }
+
+    function handleBackspace() {
+      currentGuess = currentGuess.slice(0, -1);
+      updateGrid();
+    }
+
+    function handleSubmit() {
+      if (currentGuess.length < WORD_LENGTH) {
+        showMessage("Not enough letters");
+        return;
+      }
+
+      // if (!wordList.includes(currentGuess)) {
+      //   showMessage("Not a valid word");
+      //   return;
+      // }
+
+      guesses.push(currentGuess);
+      updateGrid();
+
+      if (currentGuess === targetWord) {
+        showMessage("You got it! 🎉");
+        document.removeEventListener("keydown", keyHandler);
+        return;
+      }
+
+      currentGuess = "";
+      currentRow++;
+
+      if (currentRow >= MAX_GUESSES) {
+        showMessage(`Game over! The word was "${targetWord.toUpperCase()}"`);
+        document.removeEventListener("keydown", keyHandler);
+      }
+    }
+
+    function showMessage(msg) {
+      message.textContent = msg;
+      message.style.display = "block";
+    setTimeout(() => {
+    message.style.display = "none";
+    }, 3000);
+    }
+
+    function keyHandler(e) {
+      if (e.key === "Enter") {
+        handleSubmit();
+      } else if (e.key === "Backspace") {
+        handleBackspace();
+      } else if (/^[a-z]$/i.test(e.key)) {
+        handleKey(e.key.toLowerCase());
+      }
+    }
+
+    document.addEventListener("keydown", keyHandler);
+    document.getElementById("guess-btn").addEventListener("click", handleSubmit);
+  </script>
+</body>
+</html>
+

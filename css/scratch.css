@@ -1,0 +1,73 @@
+body {
+    background-color: whitesmoke;
+    font-family: cursive;
+    margin-top: 80px;    /* Adds space at the top of the body to prevent overlap with the fixed header */ 
+     
+}
+
+.intereststatement{
+    color: #EE2536;
+}
+
+.heading {
+    position: fixed;     /* Makes the header fixed at the top of the page */
+    top: 20px;              /* Aligns the header to the top of the page */
+    left: 0;             /* Ensures the header starts from the left of the page */
+    width: 100%;         /* Makes the header span across the full width of the page */
+    background-color:#EE2536; /* Sets the background color to red */
+    color: white;        /* Sets the text color to white for contrast */
+    text-align: center;  /* Centers the text inside the header */
+    font-size: 36px;     /* Sets the font size */
+    padding: 10px 0;     /* Adds padding for top and bottom of the header */
+    z-index: 1000;       /* Ensures the header stays above other content */
+}
+
+/* ok this is where Chat came in */
+.realtop {
+    position: fixed;      /* Fixes it at the top of the page */
+    top: 0;               /* Aligns it to the top */
+    left: 0;              /* Aligns it to the left */
+    width: 100%;          /* Makes it span the entire width */
+    background-color:gray; /* Dark background */
+    padding: 10px 0;      /* Adds padding for spacing */
+    text-align: l;   /* Centers the links inside */
+    z-index: 1000;        /* Ensures it stays on top of other content */
+}
+      
+.realtop a {
+    color: white;         /* White text color */
+    text-decoration: none; /* Removes underline */
+    font-size: 18px;       /* Font size for links */
+    padding: 10px 20px;    /* Padding around the links */
+    margin: 0 10px;        /* Space between links */
+}
+      
+.realtop a:hover {
+    background-color: #555; /* Darker background color when hovering */
+    color: white;          /* Changes text color to tomato on hover */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition effect */
+}
+
+ .centerbabe{
+    text-align: center;
+    align-content: center;
+    list-style-position: inside;  /* makes bullets/numbers part of the content block */
+    text-align: center;           /* centers the text */
+    padding-left: 0;              /* removes default left padding */
+ }
+
+.customList {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto; /* centers the list container */
+    width: max-content;
+    text-align: left;
+}
+
+.tableauPlaceholder{
+    transform: scale(0.8);       /* 80% of original size */
+    transform-origin: top center;  /* makes it shrink from the top-left corner */
+    width: 100%; 
+    overflow: hidden; 
+    margin-bottom: -200px
+}
